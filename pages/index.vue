@@ -28,10 +28,5 @@ export default {
     Connections,
     NewConnection
   },
-  methods: {
-    reconcileConnections() {
-      this.connections = getConnections()
-    }
-  }
 }
 </script>
