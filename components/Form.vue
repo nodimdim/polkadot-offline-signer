@@ -102,7 +102,7 @@ import {
   createSigningPayload, 
   createSignedTx, 
   getTxHash, 
-  POLKADOT_SS58_FORMAT 
+  POLKADOT_SS58_FORMAT,
 } from '@substrate/txwrapper'
 
 const initialData = {
@@ -167,7 +167,7 @@ export default {
       const unsignedTx = methods.balances.transferKeepAlive(txArgs, txInfo, txOptions)
       // This is needed since the transferKeepAlive library has a bug that overrides 
       // era to 64 is eraPeriod equals to zero.
-      unsignedTx.era = "0x00000000"
+      unsignedTx.era = registry.createType('ImmortalEra').toHex()
       const signingPayload = createSigningPayload(unsignedTx, txOptions);
       const signature = signWith(fromKeypair, signingPayload, txOptions);
       const signedTx = createSignedTx(unsignedTx, signature, txOptions);
