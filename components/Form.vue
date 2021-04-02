@@ -173,18 +173,18 @@ export default {
       const fromKeypair = keyring.addFromUri(this.formData.mnemonic)
       const txArgs = {
         dest: this.formData.destination,
-        value: parseInt(this.formData.amount),
+        value: this.formData.amount,
       }
       const txInfo = {
         address: deriveAddress(fromKeypair.publicKey, POLKADOT_SS58_FORMAT),
         blockHash: this.formData.genesisHash,
-        blockNumber: 0,
+        blockNumber: "0",
         genesisHash: this.formData.genesisHash,
         metadataRpc: this.formData.metadata,
-        nonce: parseInt(this.formData.nonce),
+        nonce: this.formData.nonce,
         specVersion: this.formData.specVersion,
-        tip: parseInt(this.formData.tip),
-        eraPeriod: 0,
+        tip: this.formData.tip,
+        eraPeriod: "0",
         transactionVersion: this.formData.transactionVersion,
       }
       const registry = getRegistry('Polkadot', "polkadot", this.formData.specVersion)
@@ -192,7 +192,6 @@ export default {
         metadataRpc: this.formData.metadata,
         registry,
       }
-      console.log(txArgs, txInfo, txOptions)
       const unsignedTx = methods.balances.transferKeepAlive(txArgs, txInfo, txOptions)
       // This is needed since the transferKeepAlive library has a bug that overrides 
       // era to 64 is eraPeriod equals to zero.
