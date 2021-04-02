@@ -95,6 +95,8 @@
                 class="is-primary" expanded/>
             </div>
           </form>
+          <br>
+          <BroadcastAttempts></BroadcastAttempts>
       </b-tab-item>
     </b-tabs>
   </div>
@@ -102,6 +104,7 @@
 
 <script>
 import FileReader from "./FileReader";
+import BroadcastAttempts from './BroadcastAttempts'
 import { Keyring } from '@polkadot/api';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { getConnection } from '~/helpers/connestion_storage'
@@ -118,6 +121,7 @@ import {
   decode,
   POLKADOT_SS58_FORMAT,
 } from '@substrate/txwrapper'
+import { addBroadcastAtempt } from '~/helpers/broadcasts'
 
 function decodePatch(unsignedTx, txOptions) {
   let unsignedTx_ = { ...unsignedTx }
@@ -214,18 +218,27 @@ export default {
     async submitTx() {
        try {
         const actualTxHash = await rpcToNode(this.broadcastData.url, 'author_submitExtrinsic', [this.broadcastData.signedTx]);
-        console.log(`Actual Tx Hash: ${actualTxHash}`);
         this.$buefy.toast.open({
-            message: 'Broadcasting transaction was successful!',
+            message: `Broadcasting transaction was successful! TxHash: ${actualTxHash}`,
             type: 'is-success'
         })
+        addBroadcastAtempt({
+          signedTx: this.broadcastData.signedTx,
+          isError: false,
+          txHash: actualTxHash,
+        })
       } catch (e) {
-        console.log(e)
         this.$buefy.toast.open({
             message: `Something went wrong while boadcasting transaction. Error: ${e.message}`,
             type: 'is-danger'
         })
+        addBroadcastAtempt({
+          signedTx: this.broadcastData.signedTx,
+          isError: true,
+          errorMessage: e.message,
+        })
       }
+      this.$root.$emit('reconcile-broadcasts')
       this.resetApp()
     },
     resetApp() {
@@ -266,7 +279,8 @@ export default {
     });
   },
   components: {
-    FileReader
+    FileReader,
+    BroadcastAttempts,
   }
 }
 </script>
