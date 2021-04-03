@@ -308,59 +308,67 @@ export default {
         })
         return
       }
-      const keyring = new Keyring()
-      const fromKeypair = keyring.addFromUri(this.formData.mnemonic)
-      const txArgs = {
-        dest: this.formData.destination,
-        value: this.formData.amount,
-      }
-      const txInfo = {
-        address: deriveAddress(fromKeypair.publicKey, POLKADOT_SS58_FORMAT),
-        blockHash: this.formData.genesisHash,
-        blockNumber: '0',
-        genesisHash: this.formData.genesisHash,
-        metadataRpc: this.formData.metadata,
-        nonce: this.formData.nonce,
-        specVersion: this.formData.specVersion,
-        tip: this.formData.tip,
-        eraPeriod: '0',
-        transactionVersion: this.formData.transactionVersion,
-      }
-      const registry = getRegistry(
-        'Polkadot',
-        'polkadot',
-        this.formData.specVersion
-      )
-      const txOptions = {
-        metadataRpc: this.formData.metadata,
-        registry,
-      }
-      const unsignedTx = methods.balances.transferKeepAlive(
-        txArgs,
-        txInfo,
-        txOptions
-      )
-      // This is needed since the transferKeepAlive library has a bug that overrides
-      // era to 64 is eraPeriod equals to zero.
-      unsignedTx.era = registry.createType('ImmortalEra').toHex()
-      const decodedUnsignedTx = decodePatch(unsignedTx, txOptions)
-      const signingPayload = createSigningPayload(unsignedTx, txOptions)
-      const signature = signWith(fromKeypair, signingPayload, txOptions)
-      const signedTx = createSignedTx(unsignedTx, signature, txOptions)
-      const expectedTxHash = getTxHash(signedTx)
+      try {
+        const keyring = new Keyring()
+        const fromKeypair = keyring.addFromUri(this.formData.mnemonic)
+        const txArgs = {
+          dest: this.formData.destination,
+          value: this.formData.amount,
+        }
+        const txInfo = {
+          address: deriveAddress(fromKeypair.publicKey, POLKADOT_SS58_FORMAT),
+          blockHash: this.formData.genesisHash,
+          blockNumber: '0',
+          genesisHash: this.formData.genesisHash,
+          metadataRpc: this.formData.metadata,
+          nonce: this.formData.nonce,
+          specVersion: this.formData.specVersion,
+          tip: this.formData.tip,
+          eraPeriod: '0',
+          transactionVersion: this.formData.transactionVersion,
+        }
+        const registry = getRegistry(
+          'Polkadot',
+          'polkadot',
+          this.formData.specVersion
+        )
+        const txOptions = {
+          metadataRpc: this.formData.metadata,
+          registry,
+        }
+        const unsignedTx = methods.balances.transferKeepAlive(
+          txArgs,
+          txInfo,
+          txOptions
+        )
+        // This is needed since the transferKeepAlive library has a bug that overrides
+        // era to 64 is eraPeriod equals to zero.
+        unsignedTx.era = registry.createType('ImmortalEra').toHex()
+        const decodedUnsignedTx = decodePatch(unsignedTx, txOptions)
+        const signingPayload = createSigningPayload(unsignedTx, txOptions)
+        const signature = signWith(fromKeypair, signingPayload, txOptions)
+        const signedTx = createSignedTx(unsignedTx, signature, txOptions)
+        const expectedTxHash = getTxHash(signedTx)
 
-      this.txData.unsignedTx = JSON.stringify(unsignedTx, undefined, 2)
-      this.txData.decodedUnsignedTx = JSON.stringify(
-        decodedUnsignedTx,
-        undefined,
-        2
-      )
-      this.txData.signingPayload = signingPayload
-      this.txData.signature = signature
-      this.txData.signedTx = signedTx
-      this.txData.expectedTxHash = expectedTxHash
+        this.txData.unsignedTx = JSON.stringify(unsignedTx, undefined, 2)
+        this.txData.decodedUnsignedTx = JSON.stringify(
+          decodedUnsignedTx,
+          undefined,
+          2
+        )
+        this.txData.signingPayload = signingPayload
+        this.txData.signature = signature
+        this.txData.signedTx = signedTx
+        this.txData.expectedTxHash = expectedTxHash
 
-      this.showForm = false
+        this.showForm = false
+      } catch(e) {
+        this.$buefy.toast.open({
+          message: `Something went wrong creating transaction. Error: ${e.message}`,
+          type: 'is-danger',
+        })
+        return
+      }
     },
     async submitTx() {
       try {
