@@ -5,7 +5,7 @@
     <p v-if="broadcasts.length == 0">No recent broadcasts found.</p>
     <div v-for="broadcast in broadcasts" :key="broadcast.id">
       <div class="box wrapword">
-        <p><b>Node Url:</b>{{ broadcast.url }}</p>
+        <p><b>Node Url:</b> {{ broadcast.url }}</p>
         <p><b>Signed Tx:</b><br />{{ broadcast.signedTx }}</p>
         <b>Outcome:</b>
         <b-tag v-if="broadcast.isError" type="is-danger">Error</b-tag>
