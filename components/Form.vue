@@ -2,90 +2,114 @@
   <div>
     <b-tabs type="is-boxed">
       <b-tab-item label="Create Signed Transaction Offline" icon="plus">
-        <section v-if="showForm">
-          <form @submit.prevent="createTransaction">
-            <b-field label="Genesis Hash">
-                <b-input v-model="formData.genesisHash" :lazy="true"></b-input>
-            </b-field>
+        <ValidationObserver ref="observerTx" tag="form" v-slot="{ passes }">
+          <section v-if="showForm">
+            <form @submit.prevent="passes(createTransaction)">
+              <ValidationProvider rules="required" v-slot="{ errors, valid }">
+                <b-field label="Genesis Hash" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input v-model="formData.genesisHash" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
-            <b-field label="RPC Metadata">
-                <b-input type="textarea" v-model="formData.metadata" :lazy="true"></b-input>
-            </b-field>
+              <ValidationProvider rules="required" v-slot="{ errors, valid }">
+                <b-field label="RPC Metadata" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input type="textarea" v-model="formData.metadata" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
-            <b-field label="Spec Version">
-                <b-input v-model="formData.specVersion" :lazy="true"></b-input>
-            </b-field>
+              <ValidationProvider rules="required" v-slot="{ errors, valid }">
+                <b-field label="Spec Version" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input v-model="formData.specVersion" type="number" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
-            <b-field label="Transaction Version">
-                <b-input v-model="formData.transactionVersion" :lazy="true"></b-input>
-            </b-field>
+              <ValidationProvider rules="required" v-slot="{ errors, valid }">
+                <b-field label="Transaction Version" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input v-model="formData.transactionVersion" type="number" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
-            <b-field label="Destination Address">
-                <b-input v-model="formData.destination" :lazy="true"></b-input>
-            </b-field>
+              <ValidationProvider rules="required|isValidAddress" v-slot="{ errors, valid }">
+                <b-field label="Destination Address" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input v-model="formData.destination" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
-            <b-field label="Amount">
-                <b-input v-model="formData.amount" type="number" min="1" :lazy="true"></b-input>
-            </b-field>
+              <ValidationProvider rules="required" v-slot="{ errors, valid }">
+                <b-field label="Amount" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input v-model="formData.amount" type="number" min="1" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
-            <b-field label="Nonce">
-                <b-input v-model="formData.nonce" type="number" min="0" :lazy="true"></b-input>
-            </b-field>
+              <ValidationProvider rules="required" v-slot="{ errors, valid }">
+                <b-field label="Nonce" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input v-model="formData.nonce" type="number" min="0" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
-            <b-field label="Tip">
-                <b-input v-model="formData.tip" type="number" min="0" :lazy="true"></b-input>
-            </b-field>
+              <ValidationProvider rules="required" v-slot="{ errors, valid }">
+                <b-field label="Tip" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                    <b-input v-model="formData.tip" type="number" min="0" :lazy="true"></b-input>
+                </b-field>
+              </ValidationProvider>
 
+              <br>
+
+              <FileReader @load="loadFileDataToMnemonic($event)"></FileReader>
+
+              <br>
+
+              <div class="has-text-centered">
+                <b-button
+                  label="Create Transaction"
+                  native-type="submit"
+                  class="is-primary" expanded/>
+              </div>
+            </form>
+          </section>
+          <section v-else>
+            <h3 class="is-size-6"> <b>Unsigned Transaction</b> </h3>
+            <pre>{{txData.unsignedTx}}</pre>
             <br>
-
-            <FileReader @load="loadFileDataToMnemonic($event)"></FileReader>
-
+            <h3 class="is-size-6"> <b>Decoded Unsigned Transaction</b> </h3>
+            <pre>{{txData.decodedUnsignedTx}}</pre>
             <br>
-
+            <h3 class="is-size-6"> <b>Signning Payload</b> </h3>
+            <pre class="wrapword">{{txData.signingPayload}}</pre>
+            <br>
+            <h3 class="is-size-6"> <b>Signature</b> </h3>
+            <pre class="wrapword">{{txData.signature}}</pre>
+            <br>
+            <h3 class="is-size-6"> <b>Signed Transaction</b> </h3>
+            <pre class="wrapword">{{txData.signedTx}}</pre>
+            <br>
+            <h3 class="is-size-6"> <b>Expected Transaction Hash</b> </h3>
+            <pre class="wrapword">{{txData.expectedTxHash}}</pre>
+            <br>
+            
             <div class="has-text-centered">
               <b-button
-                label="Create Transaction"
-                native-type="submit"
+                @click="resetTx()"
+                label="Create New Transaction"
                 class="is-primary" expanded/>
             </div>
-          </form>
-        </section>
-        <section v-else>
-          <h3 class="is-size-6"> <b>Unsigned Transaction</b> </h3>
-          <pre>{{txData.unsignedTx}}</pre>
-          <br>
-          <h3 class="is-size-6"> <b>Decoded Unsigned Transaction</b> </h3>
-          <pre>{{txData.decodedUnsignedTx}}</pre>
-          <br>
-          <h3 class="is-size-6"> <b>Signning Payload</b> </h3>
-          <pre class="wrapword">{{txData.signingPayload}}</pre>
-          <br>
-          <h3 class="is-size-6"> <b>Signature</b> </h3>
-          <pre class="wrapword">{{txData.signature}}</pre>
-          <br>
-          <h3 class="is-size-6"> <b>Signed Transaction</b> </h3>
-          <pre class="wrapword">{{txData.signedTx}}</pre>
-          <br>
-          <h3 class="is-size-6"> <b>Expected Transaction Hash</b> </h3>
-          <pre class="wrapword">{{txData.expectedTxHash}}</pre>
-          <br>
-          
-          <div class="has-text-centered">
-            <b-button
-              @click="resetApp()"
-              label="Create New Transaction"
-              class="is-primary" expanded/>
-          </div>
-        </section>
+          </section>
+        </ValidationObserver>
       </b-tab-item>
       <b-tab-item label="Broadcast" icon="access-point">
-         <form @submit.prevent="submitTx()">
-            <b-field label="Signed Transaction">
-                <b-input type="textarea" v-model="broadcastData.signedTx" :lazy="true"></b-input>
-            </b-field>
-            <b-field label="URL to broadcast">
-                <b-input v-model="broadcastData.url" :lazy="true"></b-input>
-            </b-field>
+        <ValidationObserver ref="observerBroadcast" tag="form" v-slot="{ passes }">
+          <form @submit.prevent="passes(submitTx)">
+            <ValidationProvider rules="required" v-slot="{ errors, valid }">
+              <b-field label="Signed Transaction" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                  <b-input type="textarea" v-model="broadcastData.signedTx" :lazy="true"></b-input>
+              </b-field>
+            </ValidationProvider>
+
+            <ValidationProvider rules="required" v-slot="{ errors, valid }">
+              <b-field label="URL to broadcast" :type="{'is-danger': errors[0], 'is-success': valid }" :message="errors">
+                  <b-input v-model="broadcastData.url" :lazy="true"></b-input>
+              </b-field>
+            </ValidationProvider>
             <br>
 
             <div class="has-text-centered">
@@ -95,8 +119,9 @@
                 class="is-primary" expanded/>
             </div>
           </form>
-          <br>
-          <BroadcastAttempts></BroadcastAttempts>
+        </ValidationObserver>
+        <br>
+        <BroadcastAttempts></BroadcastAttempts>
       </b-tab-item>
     </b-tabs>
   </div>
@@ -173,6 +198,13 @@ export default {
     },
     async createTransaction() {
       await cryptoWaitReady();
+      if (!this.formData.mnemonic) {
+        this.$buefy.toast.open({
+            message: `Can't create a transcation without or with invalide mnemonic. Make sure you've uploaded a valid mnemonic.`,
+            type: 'is-danger'
+        })
+        return
+      }
       const keyring = new Keyring();
       const fromKeypair = keyring.addFromUri(this.formData.mnemonic)
       const txArgs = {
@@ -239,9 +271,9 @@ export default {
         })
       }
       this.$root.$emit('reconcile-broadcasts')
-      this.resetApp()
+      this.resetBroadcast()
     },
-    resetApp() {
+    resetTx() {
       this.$root.$emit('reset-app')
 
       this.formData.genesisHash = ''
@@ -262,10 +294,15 @@ export default {
       this.txData.signedTx = ''
       this.txData.expectedTxHash = ''
 
+      this.showForm = true
+
+      this.$refs.observerTx.reset();
+    },
+    resetBroadcast() {
       this.broadcastData.signedTx = ''
       this.broadcastData.url = ''
 
-      this.showForm = true
+      this.$refs.observerBroadcast.reset();
     }
   },
   mounted() {

@@ -12,7 +12,7 @@
             <p>
               <b-icon icon="upload" size="is-large"></b-icon>
             </p>
-            <p>Drop your files here or click to upload</p>
+            <p>Click here to upload your mnemonic file</p>
           </div>
         </section>
     </label>
@@ -51,7 +51,7 @@ input {
   display: none;
 }
 section {
-  border: 1px solid black;
+  border: 1px dotted black;
   border-radius: 3px;
 }
 </style>

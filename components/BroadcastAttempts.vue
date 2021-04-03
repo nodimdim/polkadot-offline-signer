@@ -49,4 +49,7 @@ export default {
   margin-top: 20px;
   margin-bottom: 20px;
 }
+.box {
+  margin-bottom: 10px;
+}
 </style>
