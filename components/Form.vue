@@ -362,12 +362,11 @@ export default {
         this.txData.expectedTxHash = expectedTxHash
 
         this.showForm = false
-      } catch(e) {
+      } catch (e) {
         this.$buefy.toast.open({
           message: `Something went wrong creating transaction. Error: ${e.message}`,
           type: 'is-danger',
         })
-        return
       }
     },
     async submitTx() {
