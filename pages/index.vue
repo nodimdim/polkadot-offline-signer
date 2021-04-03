@@ -6,10 +6,9 @@
           <Connections></Connections>
           <NewConnection></NewConnection>
         </div>
-        <div class="column">
-        </div>
+        <div class="column"></div>
         <div class="column is-half">
-          <Form/>
+          <Form />
         </div>
       </div>
     </div>
@@ -26,7 +25,7 @@ export default {
   components: {
     Form,
     Connections,
-    NewConnection
+    NewConnection,
   },
 }
 </script>

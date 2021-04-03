@@ -1,8 +1,8 @@
 <template>
   <div>
-    <span style="color:#FF0000">Polka</span>
-    <span style="color:#66CC66">Sign</span>
-    <span style="color:#FF9966">.</span>
+    <span style="color: #ff0000">Polka</span>
+    <span style="color: #66cc66">Sign</span>
+    <span style="color: #ff9966">.</span>
   </div>
 </template>
 
