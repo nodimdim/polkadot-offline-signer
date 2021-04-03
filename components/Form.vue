@@ -374,6 +374,7 @@ export default {
           type: 'is-success',
         })
         addBroadcastAtempt({
+          url: this.broadcastData.url,
           signedTx: this.broadcastData.signedTx,
           isError: false,
           txHash: actualTxHash,
@@ -384,6 +385,7 @@ export default {
           type: 'is-danger',
         })
         addBroadcastAtempt({
+          url: this.broadcastData.url,
           signedTx: this.broadcastData.signedTx,
           isError: true,
           errorMessage: e.message,

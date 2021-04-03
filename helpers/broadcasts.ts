@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface BroadcastAtempt {
   id: string,
+  url: string,
   signedTx: string,
   isError: Boolean,
   errorMessage: string,
