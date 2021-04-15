@@ -309,7 +309,7 @@ export default {
         return
       }
       try {
-        const keyring = new Keyring()
+        const keyring = new Keyring({ type: 'sr25519' })
         const fromKeypair = keyring.addFromUri(this.formData.mnemonic)
         const txArgs = {
           dest: this.formData.destination,
