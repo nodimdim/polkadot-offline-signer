@@ -46,7 +46,7 @@ export default {
 
   // Router config.
   router: {
-    base: './'
+    base: process.env.NODE_ENV !== 'production' ? '/' : './',
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

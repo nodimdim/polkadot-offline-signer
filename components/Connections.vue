@@ -11,14 +11,15 @@
             <p><b>url</b>: {{ connection.url }}</p>
           </div>
           <b-button
+            type="is-primary"
+            @click="useThisConnection(connection.id)"
+            >Use</b-button
+          >
+          <b-button
+            v-if="connection.id != 'default'"
             type="is-primary is-light"
             @click="removeConnectionAndReconcile(connection.id)"
             >Delete</b-button
-          >
-          <b-button
-            type="is-primary is-pulled-right"
-            @click="useThisConnection(connection.id)"
-            >Use</b-button
           >
         </div>
       </div>
