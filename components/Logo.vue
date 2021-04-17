@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <span style="color: #ff0000">Polka</span>
-    <span style="color: #66cc66">Sign</span>
-    <span style="color: #ff9966">.</span>
+  <div class="has-text-centered">
+    <h1 class="is-size-1 has-text-link is-family-monospace"><b>PolkaSign.</b></h1>
+    <br>
+    <br>
+    <br>
   </div>
 </template>
 

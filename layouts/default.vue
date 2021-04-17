@@ -3,6 +3,9 @@
     <div class="container">
       <div class="columns">
         <div class="column is-one-third">
+          <Logo></Logo>
+          <br>
+          <br>
           <Connections></Connections>
           <NewConnection></NewConnection>
         </div>
@@ -19,6 +22,7 @@
 import Form from '~/components/Form.vue'
 import Connections from '~/components/Connections.vue'
 import NewConnection from '~/components/NewConnection.vue'
+import Logo from '~/components/Logo.vue'
 
 export default {
   components: {
