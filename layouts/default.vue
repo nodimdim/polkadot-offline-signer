@@ -7,7 +7,7 @@
           <NewConnection></NewConnection>
         </div>
         <div class="column"></div>
-        <div class="column is-half">
+        <div class="column is-three-fifths">
           <Form />
         </div>
       </div>

@@ -3,7 +3,7 @@
     <b-tabs type="is-boxed">
       <b-tab-item label="Create Signed Transaction Offline">
         <ValidationObserver ref="observerTx" v-slot="{ passes }" tag="form">
-          <section v-if="showForm">
+          <section>
             <form @submit.prevent="passes(createTransaction)">
               <ValidationProvider v-slot="{ errors, valid }" rules="required">
                 <b-field
@@ -135,37 +135,47 @@
                   expanded
                 />
               </div>
+              <div class="has-text-centered">
+                <b>or</b>
+              </div>
+              <b-button
+                    label="Clear Transaction Fields"
+                    class="is-primary is-light"
+                    expanded
+                    @click="resetTx()"
+                  />
             </form>
           </section>
-          <section v-else>
-            <h3 class="is-size-6"><b>Unsigned Transaction</b></h3>
-            <pre>{{ txData.unsignedTx }}</pre>
-            <br />
-            <h3 class="is-size-6"><b>Decoded Unsigned Transaction</b></h3>
-            <pre>{{ txData.decodedUnsignedTx }}</pre>
-            <br />
-            <h3 class="is-size-6"><b>Signning Payload</b></h3>
-            <pre class="wrapword">{{ txData.signingPayload }}</pre>
-            <br />
-            <h3 class="is-size-6"><b>Signature</b></h3>
-            <pre class="wrapword">{{ txData.signature }}</pre>
-            <br />
-            <h3 class="is-size-6"><b>Signed Transaction</b></h3>
-            <pre class="wrapword">{{ txData.signedTx }}</pre>
-            <br />
-            <h3 class="is-size-6"><b>Expected Transaction Hash</b></h3>
-            <pre class="wrapword">{{ txData.expectedTxHash }}</pre>
-            <br />
-
-            <div class="has-text-centered">
-              <b-button
-                label="Create New Transaction"
-                class="is-primary"
-                expanded
-                @click="resetTx()"
-              />
+          <b-modal v-model="showCreatedTx">
+            <div class="modal-card" style="width: auto">
+              <header class="modal-card-head">
+                <p class="modal-card-title">Created Transcation</p>
+              </header>
+              <section class="modal-card-body">
+                <h3 class="is-size-6"><b>Unsigned Transaction</b></h3>
+                <pre>{{ txData.unsignedTx }}</pre>
+                <br />
+                <h3 class="is-size-6"><b>Decoded Unsigned Transaction</b></h3>
+                <pre>{{ txData.decodedUnsignedTx }}</pre>
+                <br />
+                <h3 class="is-size-6"><b>Signning Payload</b></h3>
+                <pre class="wrapword">{{ txData.signingPayload }}</pre>
+                <br />
+                <h3 class="is-size-6"><b>Signature</b></h3>
+                <pre class="wrapword">{{ txData.signature }}</pre>
+                <br />
+                <h3 class="is-size-6"><b>Signed Transaction</b></h3>
+                <pre class="wrapword">{{ txData.signedTx }}</pre>
+                <br />
+                <h3 class="is-size-6"><b>Expected Transaction Hash</b></h3>
+                <pre class="wrapword">{{ txData.expectedTxHash }}</pre>
+                <br />
+              </section>
+              <footer class="modal-card-foot">
+                <b-button label="Close" class="is-primary" @click="showCreatedTx = false" />
+              </footer>
             </div>
-          </section>
+          </b-modal>
         </ValidationObserver>
       </b-tab-item>
       <b-tab-item label="Broadcast">
@@ -274,7 +284,7 @@ const initialData = {
     signedTx: '',
     url: '',
   },
-  showForm: true,
+  showCreatedTx: false,
 }
 
 export default {
@@ -361,7 +371,7 @@ export default {
         this.txData.signedTx = signedTx
         this.txData.expectedTxHash = expectedTxHash
 
-        this.showForm = false
+        this.showCreatedTx = true
       } catch (e) {
         this.$buefy.toast.open({
           message: `Something went wrong creating transaction. Error: ${e.message}`,
@@ -420,7 +430,7 @@ export default {
       this.txData.signedTx = ''
       this.txData.expectedTxHash = ''
 
-      this.showForm = true
+      this.showCreatedTx = false
 
       this.$refs.observerTx.reset()
     },
