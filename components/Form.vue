@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-tabs type="is-boxed">
-      <b-tab-item label="Create Signed Transaction Offline" icon="plus">
+      <b-tab-item label="Create Signed Transaction Offline">
         <ValidationObserver ref="observerTx" v-slot="{ passes }" tag="form">
           <section v-if="showForm">
             <form @submit.prevent="passes(createTransaction)">
@@ -168,7 +168,7 @@
           </section>
         </ValidationObserver>
       </b-tab-item>
-      <b-tab-item label="Broadcast" icon="access-point">
+      <b-tab-item label="Broadcast">
         <ValidationObserver
           ref="observerBroadcast"
           v-slot="{ passes }"

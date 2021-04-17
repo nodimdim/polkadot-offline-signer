@@ -4,16 +4,10 @@
       <section class="section">
         <div v-if="fileName" class="content has-text-centered">
           <p>
-            <b-icon icon="check" size="is-large"></b-icon>
-          </p>
-          <p>
             Reading menmonic from file: <b>{{ fileName }}</b>
           </p>
         </div>
         <div v-else class="content has-text-centered">
-          <p>
-            <b-icon icon="upload" size="is-large"></b-icon>
-          </p>
           <p>Click here to upload your mnemonic file</p>
         </div>
       </section>
