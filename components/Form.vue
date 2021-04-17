@@ -145,6 +145,7 @@
                     @click="resetTx()"
                   />
             </form>
+            <TxDatas></TxDatas>
           </section>
           <b-modal v-model="showCreatedTx">
             <div class="modal-card" style="width: auto">
@@ -242,10 +243,12 @@ import {
 } from '@substrate/txwrapper'
 import FileReader from './FileReader'
 import BroadcastAttempts from './BroadcastAttempts'
+import TxDatas from './TxDatas'
 import { getConnection } from '~/helpers/connestion_storage'
 import { rpcToNode } from '~/helpers/rpc'
 import { signWith } from '~/helpers/signer'
 import { addBroadcastAtempt } from '~/helpers/broadcasts'
+import { addTxData } from '~/helpers/signed-txs'
 
 function decodePatch(unsignedTx, txOptions) {
   const unsignedTx_ = { ...unsignedTx }
@@ -291,6 +294,7 @@ export default {
   components: {
     FileReader,
     BroadcastAttempts,
+    TxDatas,
   },
   data() {
     return initialData
@@ -372,6 +376,12 @@ export default {
         this.txData.expectedTxHash = expectedTxHash
 
         this.showCreatedTx = true
+        addTxData({
+          decodedUnsignedTx: this.txData.decodedUnsignedTx,
+          signedTx: this.txData.signedTx,
+          expectedTxHash: this.txData.expectedTxHash,
+        })
+        this.$root.$emit('reconcile-tx-datas')
       } catch (e) {
         this.$buefy.toast.open({
           message: `Something went wrong creating transaction. Error: ${e.message}`,
