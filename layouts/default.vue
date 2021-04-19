@@ -1,16 +1,9 @@
 <template>
   <section class="section">
+    <Logo></Logo>
     <div class="container">
-      <div class="columns">
-        <div class="column is-one-third">
-          <Logo></Logo>
-          <br>
-          <br>
-          <Connections></Connections>
-          <NewConnection></NewConnection>
-        </div>
-        <div class="column"></div>
-        <div class="column is-three-fifths">
+      <div class="columns is-centered">
+        <div class="column is-two-thirds">
           <Form />
         </div>
       </div>
@@ -20,15 +13,15 @@
 
 <script>
 import Form from '~/components/Form.vue'
-import Connections from '~/components/Connections.vue'
-import NewConnection from '~/components/NewConnection.vue'
 import Logo from '~/components/Logo.vue'
 
 export default {
   components: {
     Form,
-    Connections,
-    NewConnection,
+    Logo,
   },
+  mounted(){
+    this.$root.$emit('use-connection', 'default')
+ },
 }
 </script>

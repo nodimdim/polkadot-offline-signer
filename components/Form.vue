@@ -224,6 +224,10 @@
         <br />
         <BroadcastAttempts></BroadcastAttempts>
       </b-tab-item>
+      <b-tab-item label="Connections">
+        <Connections></Connections>
+        <NewConnection></NewConnection>
+      </b-tab-item>
     </b-tabs>
   </div>
 </template>
@@ -244,6 +248,8 @@ import {
 import FileReader from './FileReader'
 import BroadcastAttempts from './BroadcastAttempts'
 import TxDatas from './TxDatas'
+import Connections from '~/components/Connections.vue'
+import NewConnection from '~/components/NewConnection.vue'
 import { getConnection } from '~/helpers/connestion_storage'
 import { rpcToNode } from '~/helpers/rpc'
 import { signWith } from '~/helpers/signer'
@@ -295,6 +301,8 @@ export default {
     FileReader,
     BroadcastAttempts,
     TxDatas,
+    Connections,
+    NewConnection,
   },
   data() {
     return initialData
