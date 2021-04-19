@@ -78,19 +78,20 @@
 
               <ValidationProvider v-slot="{ errors, valid }" rules="required">
                 <b-field
-                  label="Amount"
+                  label="Amount (Planck)"
                   :type="{ 'is-danger': errors[0], 'is-success': valid }"
                   :message="errors"
                 >
                   <b-input
                     v-model="formData.amount"
                     type="number"
-                    min="1"
-                    :lazy="true"
+                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                   ></b-input>
                 </b-field>
               </ValidationProvider>
+              <p v-if="formData.amount" class="is-pulled-right"><b>{{ getDotFromPlanck(formData.amount) }} DOT</b></p>
 
+              <br />
               <ValidationProvider v-slot="{ errors, valid }" rules="required">
                 <b-field
                   label="Nonce"
@@ -108,19 +109,20 @@
 
               <ValidationProvider v-slot="{ errors, valid }" rules="required">
                 <b-field
-                  label="Tip"
+                  label="Tip (Planck)"
                   :type="{ 'is-danger': errors[0], 'is-success': valid }"
                   :message="errors"
                 >
                   <b-input
                     v-model="formData.tip"
                     type="number"
-                    min="0"
-                    :lazy="true"
+                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                   ></b-input>
                 </b-field>
               </ValidationProvider>
+              <p v-if="formData.tip" class="is-pulled-right"><b>{{ getDotFromPlanck(formData.tip) }} DOT</b></p>
 
+              <br />
               <br />
 
               <FileReader @load="loadFileDataToMnemonic($event)"></FileReader>
@@ -318,6 +320,17 @@ export default {
     })
   },
   methods: {
+    getDotFromPlanck(plankValue) {
+      const len = plankValue.length;
+      let dot;
+      if (len <= 10) {
+        dot = '0.' + plankValue.padStart(10, '0')
+      } else {
+        dot = plankValue.slice(0, len - 10) + '.' + plankValue.slice(len - 10, len);
+      }
+      while (dot.endsWith('0')) dot = dot.slice(0, -1)
+      return dot
+    },
     loadFileDataToMnemonic(fileData) {
       this.formData.mnemonic = fileData
     },
