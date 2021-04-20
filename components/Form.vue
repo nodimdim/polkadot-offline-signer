@@ -239,7 +239,7 @@
           <form @submit.prevent="passes(decodePayload)">
             <ValidationProvider v-slot="{ errors, valid }" rules="required">
               <b-field
-                label="Signed Tx"
+                label="Signed Tx or Signing Payload"
                 :type="{ 'is-danger': errors[0], 'is-success': valid }"
                 :message="errors"
               >
@@ -292,7 +292,7 @@
         <b-modal v-model="showDecodedPayload">
           <div class="modal-card" style="width: auto">
             <header class="modal-card-head">
-              <p class="modal-card-title">Decoded Signed Tx</p>
+              <p class="modal-card-title">Decoded {{ payloadData.payloadType }}</p>
             </header>
             <section class="modal-card-body">
               <pre>{{ payloadData.decodePayload }}</pre>
@@ -330,7 +330,7 @@ import { rpcToNode } from '~/helpers/rpc'
 import { signWith } from '~/helpers/signer'
 import { addBroadcastAtempt } from '~/helpers/broadcasts'
 import { addTxData } from '~/helpers/signed-txs'
-import { decodeSignedTx } from '~/helpers/decoder'
+import { decodeSignedTx, decodeSigningPayload } from '~/helpers/decoder'
  
 function decodePatch(unsignedTx, txOptions) {
   const unsignedTx_ = { ...unsignedTx }
@@ -373,6 +373,7 @@ const initialData = {
   payloadData: {
     payload: '',
     decodedPayload: '',
+    payloadType: '',
   },
   showDecodedPayload: false,
 }
@@ -560,15 +561,27 @@ export default {
         metadataRpc: this.formData.metadata,
         registry,
       }
+      let errors = []
       try {
         this.payloadData.decodePayload = decodeSignedTx(this.payloadData.payload, txOptions, true)
+        this.payloadData.payloadType = 'Signed Tx'
         this.showDecodedPayload = true
+        return
       } catch(e) {
-        this.$buefy.toast.open({
-          message: `Something went wrong while decoding signed transaction. Error: ${e.message}`,
-          type: 'is-danger',
-        })
+        errors.push(e)
       }
+      try {
+        this.payloadData.decodePayload = decodeSigningPayload(this.payloadData.payload, txOptions, true)
+        this.payloadData.payloadType = 'Signing Payload'
+        this.showDecodedPayload = true
+        return
+      } catch(e) {
+        errors.push(e)
+      }
+      this.$buefy.toast.open({
+        message: `Something went wrong while decoding signed transaction. ${errors}`,
+        type: 'is-danger',
+      })
     }
   },
 }
