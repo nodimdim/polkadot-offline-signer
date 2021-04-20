@@ -230,6 +230,79 @@
         <Connections></Connections>
         <NewConnection></NewConnection>
       </b-tab-item>
+      <b-tab-item label="Decode">
+        <ValidationObserver
+          ref="observerDecode"
+          v-slot="{ passes }"
+          tag="form"
+        >
+          <form @submit.prevent="passes(decodePayload)">
+            <ValidationProvider v-slot="{ errors, valid }" rules="required">
+              <b-field
+                label="Signed Tx"
+                :type="{ 'is-danger': errors[0], 'is-success': valid }"
+                :message="errors"
+              >
+                <b-input
+                  v-model="payloadData.payload"
+                  type="textarea"
+                  :lazy="true"
+                ></b-input>
+              </b-field>
+            </ValidationProvider>
+
+            <ValidationProvider v-slot="{ errors, valid }" rules="required">
+              <b-field
+                label="RPC Metadata"
+                :type="{ 'is-danger': errors[0], 'is-success': valid }"
+                :message="errors"
+              >
+                <b-input
+                  v-model="formData.metadata"
+                  type="textarea"
+                  :lazy="true"
+                ></b-input>
+              </b-field>
+            </ValidationProvider>
+
+            <ValidationProvider v-slot="{ errors, valid }" rules="required">
+              <b-field
+                label="Spec Version"
+                :type="{ 'is-danger': errors[0], 'is-success': valid }"
+                :message="errors"
+              >
+                <b-input
+                  v-model="formData.specVersion"
+                  type="number"
+                  :lazy="true"
+                ></b-input>
+              </b-field>
+            </ValidationProvider>
+
+            <div class="has-text-centered">
+              <b-button
+                native-type="submit"
+                label="Decode"
+                class="is-primary"
+                expanded
+              />
+            </div>
+          </form>
+        </ValidationObserver>
+        <b-modal v-model="showDecodedPayload">
+          <div class="modal-card" style="width: auto">
+            <header class="modal-card-head">
+              <p class="modal-card-title">Decoded Signed Tx</p>
+            </header>
+            <section class="modal-card-body">
+              <pre>{{ payloadData.decodePayload }}</pre>
+            </section>
+            <footer class="modal-card-foot">
+              <b-button label="Close" class="is-primary" @click="showDecodedPayload = false" />
+            </footer>
+          </div>
+        </b-modal>
+      </b-tab-item>
     </b-tabs>
   </div>
 </template>
@@ -257,7 +330,8 @@ import { rpcToNode } from '~/helpers/rpc'
 import { signWith } from '~/helpers/signer'
 import { addBroadcastAtempt } from '~/helpers/broadcasts'
 import { addTxData } from '~/helpers/signed-txs'
-
+import { decodeSignedTx } from '~/helpers/decoder'
+ 
 function decodePatch(unsignedTx, txOptions) {
   const unsignedTx_ = { ...unsignedTx }
   // This is an ugly hack to decode immortal transactions. Because the decoder provided in txWrapper
@@ -296,6 +370,11 @@ const initialData = {
     url: '',
   },
   showCreatedTx: false,
+  payloadData: {
+    payload: '',
+    decodedPayload: '',
+  },
+  showDecodedPayload: false,
 }
 
 export default {
@@ -471,6 +550,26 @@ export default {
 
       this.$refs.observerBroadcast.reset()
     },
+    decodePayload() {
+      const registry = getRegistry(
+        'Polkadot',
+        'polkadot',
+        this.formData.specVersion
+      )
+      const txOptions = {
+        metadataRpc: this.formData.metadata,
+        registry,
+      }
+      try {
+        this.payloadData.decodePayload = decodeSignedTx(this.payloadData.payload, txOptions, true)
+        this.showDecodedPayload = true
+      } catch(e) {
+        this.$buefy.toast.open({
+          message: `Something went wrong while decoding signed transaction. Error: ${e.message}`,
+          type: 'is-danger',
+        })
+      }
+    }
   },
 }
 </script>
