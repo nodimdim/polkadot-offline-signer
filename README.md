@@ -1,4 +1,5 @@
 # polka-sign
+Nuxt webapp to sign polkadot transactions offlien.
 
 ## Build Setup
 
